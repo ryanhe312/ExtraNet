@@ -85,9 +85,9 @@ class GlobalInfo():
         self.PrefixNV = name + "NoV."
         self.PrefixSpe = name + "Specular."
         self.PrefixMetallic = name + "Metallic."
-        # self.PrefixBC = name + "BaseColorAA."
-        self.PrefixBC = name + "BaseColor."
-        self.PrefixPreTM = name + "PreTonemapHDRColor."
+        self.PrefixBC = name + "BaseColorAA."
+        # self.PrefixBC = name + "BaseColor."
+        self.PrefixPreTM = name + "FinalImage."
         self.PrefixWarp = name + "Warp."
         self.PrefixGT = name + "GT."
 
@@ -121,7 +121,7 @@ class GlobalInfo():
 def init(path):
 
     PrefixSN = ""
-    PrefixPreTM = "PreTonemapHDRColor."
+    PrefixPreTM = "FinalImage."
     for filePath in glob.glob(path + "\\*"):
         if PrefixPreTM in filePath:
             PrefixSN = filePath.split('\\')[-1].split(PrefixPreTM)[0]
@@ -183,9 +183,9 @@ def demodulate(id, globalInfo, start, end):
     for i in range(fix_start, end):
         idx = str(i).zfill(4)
         # idx_next = str(i + 1).zfill(4)
-        img = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixPreTM + idx + ".exr"), cv.IMREAD_UNCHANGED)
-        # img_BaseColor = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixBC + idx_next + ".exr"), cv.IMREAD_UNCHANGED)
-        img_BaseColor = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixBC + idx + ".exr"), cv.IMREAD_UNCHANGED)
+        img = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixPreTM + idx + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3]
+        # img_BaseColor = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixBC + idx_next + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3]
+        img_BaseColor = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixBC + idx + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3]
 
         img_Res = img / img_BaseColor
         img_Res[img_BaseColor == 0] = 0
@@ -433,21 +433,21 @@ def make_hole(id, globalInfo, start, end):
             idx_cur = str(idx + j).zfill(4)
             idx_mv = str(idx + j + 1).zfill(4)
             if ENABLE_DEMODULATE:
-                img.append(cv.imread(os.path.join(globalInfo.mDemodulatePath, globalInfo.PrefixPreTM + idx_cur + ".exr"), cv.IMREAD_UNCHANGED))
+                img.append(cv.imread(os.path.join(globalInfo.mDemodulatePath, globalInfo.PrefixPreTM + idx_cur + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3])
             else:
-                img.append(cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixPreTM + idx_cur + ".exr"), cv.IMREAD_UNCHANGED))
-            world_normal.append(cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixWN + idx_cur + ".exr"), cv.IMREAD_UNCHANGED))
-            world_position.append(cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixWP + idx_cur + ".exr"), cv.IMREAD_UNCHANGED))
-            custom_stencil.append(cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixSC + idx_cur + ".exr"), cv.IMREAD_UNCHANGED))
-            motion_vector_temp = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixMV + idx_mv + ".exr"), cv.IMREAD_UNCHANGED)
+                img.append(cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixPreTM + idx_cur + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3])
+            world_normal.append(cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixWN + idx_cur + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3])
+            world_position.append(cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixWP + idx_cur + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3])
+            custom_stencil.append(cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixSC + idx_cur + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3])
+            motion_vector_temp = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixMV + idx_mv + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3]
             motion_vector.append(cv.cvtColor(motion_vector_temp, cv.COLOR_BGR2RGB))
 
         idx_res = str(idx + WARP_NUM).zfill(4)
-        depth_target = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixSD + idx_res + ".exr"), cv.IMREAD_UNCHANGED)
-        NoV_target = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixNV + idx_res + ".exr"), cv.IMREAD_UNCHANGED)
-        world_normal_target = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixWN + idx_res + ".exr"), cv.IMREAD_UNCHANGED)
-        world_position_target = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixWP + idx_res + ".exr"), cv.IMREAD_UNCHANGED)
-        custom_stencil_target = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixSC + idx_res + ".exr"), cv.IMREAD_UNCHANGED)
+        depth_target = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixSD + idx_res + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3]
+        NoV_target = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixNV + idx_res + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3]
+        world_normal_target = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixWN + idx_res + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3]
+        world_position_target = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixWP + idx_res + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3]
+        custom_stencil_target = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixSC + idx_res + ".exr"), cv.IMREAD_UNCHANGED)[:,:,:3]
 
         if ENABLE_DEMODULATE:
             img_gt = cv.imread(os.path.join(globalInfo.mDemodulatePath, globalInfo.PrefixPreTM + idx_res + ".exr"), cv.IMREAD_UNCHANGED)

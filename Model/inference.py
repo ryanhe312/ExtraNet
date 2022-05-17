@@ -133,8 +133,9 @@ def inference(modelPath):
         res = DeToneSimple(res)
 
 
-        skybox = ImgRead(path, idx,prefix=prefix+"Skybox", cvtrgb=False)
-        albedo = ImgRead(path, idx,prefix=prefix+"BaseColor", cvtrgb=False)
+        # skybox = ImgRead(path, idx,prefix=prefix+"Skybox", cvtrgb=False)[:,:,:3]
+        skybox = ImgRead(path, idx,prefix=prefix+"PreTonemapHDRColor", cvtrgb=False)[:,:,:3] # Use prev frame as skybox 
+        albedo = ImgRead(path, idx,prefix=prefix+"BaseColor", cvtrgb=False)[:,:,:3]
 
 
         res=res*albedo

@@ -5,20 +5,20 @@ import sys
 import glob
 from multiprocessing import Process
 # basePath0 = "D:/training_set_v2/WithoutDemodulate/MedievalOrigin/"
-basePath1 = "I:/"
-
+# basePath1 = "I:/"
 
 threadNum = 4
 
-dirList = [basePath1+"MD_Train_6", basePath1+"MD_Train_2", basePath1+"MD_Train_5", basePath1+"MD_Train_7"]
+dirList = ["G:/Unreal Projects/SunSet/Saved/VideoCaptures/"] ## Must end with /
 
-ScenePrefix = "MedievalDocks"
+ScenePrefix = "ThirdPersonExampleMap"
 WarpPrefix = "Warp"
 GtPrefix = "GT"
 NormalPrefix = "WorldNormal"
 DepthPrefix = "SceneDepth"
 MetalicPrefix = "Metallic"
 RoughPrefix = "Roughness"
+MVPrefix ="MotionVector"
 def MergeRange(start, end, inPath, outPath):
     for idx in range(start, end):
         newIdx = str(idx).zfill(4)
@@ -35,11 +35,12 @@ def MergeRange(start, end, inPath, outPath):
         roughness = cv2.imread(inPath+"/"+ScenePrefix+RoughPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:1]
         depth = cv2.imread(inPath+"/"+ScenePrefix+DepthPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:1]
         normal = cv2.imread(inPath+"/"+ScenePrefix+NormalPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        motionvector = cv2.imread(inPath+"/"+ScenePrefix+MVPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
 
 
-        res = np.concatenate([img,img3,img5, imgOcc, img_no_hole, img_no_hole3, img_no_hole5, gt, metalic, roughness, depth, normal], axis=2)
+        res = np.concatenate([img,img3,img5, imgOcc, img_no_hole, img_no_hole3, img_no_hole5, gt, metalic, roughness, depth, normal, motionvector], axis=2)
         res = res.astype(np.float16)
-
+        print('outputing',outPath+'compressed.{}.npz'.format(newIdx))
         np.savez_compressed(outPath+'compressed.{}.npz'.format(newIdx), i = res)
         # np.save(outPath+'compressed.{}'.format(newIdx), res)
 def GetCompressStartEnd(path):
@@ -146,7 +147,7 @@ def CompressRange(di):
 
 if __name__ == "__main__":
     for di in dirList:
-        MergeFile(di, "I:/medieval_compressed/"+di.split("/")[-1]+"/")
+        MergeFile(di, di)
     # for di in dirList:
     #     CompressRange(di)
 
