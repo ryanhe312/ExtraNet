@@ -9,9 +9,13 @@ from multiprocessing import Process
 
 threadNum = 4
 
-dirList = ["G:/Unreal Projects/SunSet/Saved/VideoCaptures/"] ## Must end with /
+# dirList = ["G:/Unreal Projects/SunSet/Saved/VideoCaptures/"] ## Must end with /
+# dirList = ["G:/Unreal Projects/Blueprints/Blueprints/Saved/VideoCaptures/"] ## Must end with /
+dirList = ["G:/Unreal Projects/SunTemple/Saved/VideoCaptures_1080p/"]
 
-ScenePrefix = "ThirdPersonExampleMap"
+# ScenePrefix = "ThirdPersonExampleMap"
+# ScenePrefix = "BlueprintOffice"
+ScenePrefix = "SunTemple"
 GtPrefix = "FinalImage"
 DepthPrefix = "SceneDepth"
 MVPrefix ="MotionVector"

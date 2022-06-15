@@ -92,30 +92,30 @@ class GlobalInfo():
         self.PrefixGT = name + "GT."
 
         # setup merge files
-        self.PrefixR = name + "Roughness."
-        self.PrefixM = name + "Metallic."
-        self.mMergePath = os.path.join(path, "merged_files")
-        self.mFinal = os.path.join(self.mMergePath, "final")
-        self.mGbuffer = os.path.join(self.mMergePath, "gbuffer")
-        self.mMergeWarpRes = os.path.join(self.mFinal, "warp_res")
-        self.mMergeGT = os.path.join(self.mFinal, "GT")
-        self.mMergeOCC = os.path.join(self.mFinal, "occ")
-        self.mMergeNoHole = os.path.join(self.mFinal, "warp_no_hole")
+        # self.PrefixR = name + "Roughness."
+        # self.PrefixM = name + "Metallic."
+        # self.mMergePath = os.path.join(path, "merged_files")
+        # self.mFinal = os.path.join(self.mMergePath, "final")
+        # self.mGbuffer = os.path.join(self.mMergePath, "gbuffer")
+        # self.mMergeWarpRes = os.path.join(self.mFinal, "warp_res")
+        # self.mMergeGT = os.path.join(self.mFinal, "GT")
+        # self.mMergeOCC = os.path.join(self.mFinal, "occ")
+        # self.mMergeNoHole = os.path.join(self.mFinal, "warp_no_hole")
 
-        if os.path.exists(self.mMergePath) is False:
-            os.makedirs(self.mMergePath)
-        if os.path.exists(self.mFinal) is False:
-            os.makedirs(self.mFinal)
-        if os.path.exists(self.mGbuffer) is False:
-            os.makedirs(self.mGbuffer)        
-        if os.path.exists(self.mMergeWarpRes) is False:
-            os.makedirs(self.mMergeWarpRes)
-        if os.path.exists(self.mMergeGT) is False:
-            os.makedirs(self.mMergeGT)
-        if os.path.exists(self.mMergeOCC) is False:
-            os.makedirs(self.mMergeOCC)
-        if os.path.exists(self.mMergeNoHole) is False:
-            os.makedirs(self.mMergeNoHole)
+        # if os.path.exists(self.mMergePath) is False:
+        #     os.makedirs(self.mMergePath)
+        # if os.path.exists(self.mFinal) is False:
+        #     os.makedirs(self.mFinal)
+        # if os.path.exists(self.mGbuffer) is False:
+        #     os.makedirs(self.mGbuffer)        
+        # if os.path.exists(self.mMergeWarpRes) is False:
+        #     os.makedirs(self.mMergeWarpRes)
+        # if os.path.exists(self.mMergeGT) is False:
+        #     os.makedirs(self.mMergeGT)
+        # if os.path.exists(self.mMergeOCC) is False:
+        #     os.makedirs(self.mMergeOCC)
+        # if os.path.exists(self.mMergeNoHole) is False:
+        #     os.makedirs(self.mMergeNoHole)
 
 
 def init(path):
@@ -459,8 +459,8 @@ def make_hole(id, globalInfo, start, end):
         height, width, _ = depth_target.shape
 
         for t in range(WARP_NUM):
-            if t % 2 != 0:
-                continue
+            # if t % 2 != 1-WarpFlag:
+            #     continue
             motion_vector_temp = motion_vector[t]
             for mv_t in range(t + 1, WARP_NUM):
                 motion_vector_temp = warp_motion_vector(motion_vector_temp, motion_vector[mv_t])
