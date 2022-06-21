@@ -9,7 +9,7 @@ from multiprocessing import Process
 
 threadNum = 4
 
-dirList = ["G:/Unreal Projects/MyProject/Saved/VideoCaptures/"] ## Must end with /
+dirList = ["G:/Unreal Projects/MyProject/Saved/VideoCaptures_Test/"] ## Must end with /
 
 WarpFlag = 0
 
@@ -48,9 +48,10 @@ def MergeRange(start, end, inPath, outPath):
         roughness = cv2.imread(inPath+"/"+ScenePrefix+RoughPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:1]
         depth = cv2.imread(inPath+"/"+ScenePrefix+DepthPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:1]
         normal = cv2.imread(inPath+"/"+ScenePrefix+NormalPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        motionvector = cv2.imread(inPath+"/"+ScenePrefix+MVPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
 
 
-        res = np.concatenate([img,img3,img5, imgOcc, img_no_hole, img_no_hole3, img_no_hole5, basecolor, metalic, roughness, depth, normal], axis=2)
+        res = np.concatenate([img,img3,img5, imgOcc, img_no_hole, img_no_hole3, img_no_hole5, basecolor, metalic, roughness, depth, normal, motionvector], axis=2)
         res = res.astype(np.float16)
         print('outputing',outPath+'compressed.{}.{}.npz'.format(newIdx,('Warp' if WarpFlag else 'NoWarp')))
         np.savez_compressed(outPath+'compressed.{}.{}.npz'.format(newIdx,('Warp' if WarpFlag else 'NoWarp')), i = res)
