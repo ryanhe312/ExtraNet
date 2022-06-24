@@ -11,8 +11,6 @@ threadNum = 4
 
 dirList = ["G:/Unreal Projects/MyProject/Saved/VideoCaptures_Test/"] ## Must end with /
 
-WarpFlag = 0
-
 ScenePrefix = "DemoMap2"
 WarpPrefix = "Warp"
 GtPrefix = "FinalImage"
@@ -25,23 +23,7 @@ BCPrefix = "BaseColorAA"
 def MergeRange(start, end, inPath, outPath):
     for idx in range(start, end):
         newIdx = str(idx).zfill(4)
-        if WarpFlag:
-            img = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.1.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-            img3 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.3.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-            img5 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.5.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-            imgOcc = cv2.imread(inPath+"/occ/"+ScenePrefix+WarpPrefix+".{}.1.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-            img_no_hole = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.1.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-            img_no_hole3 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.3.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-            img_no_hole5 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.5.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-        else:
-            img = cv2.imread(inPath+"/"+ScenePrefix+GtPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:3]
-            img3 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.2.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-            img5 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.4.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-            imgOcc = img
-            img_no_hole = img
-            img_no_hole3 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.2.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-            img_no_hole5 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.4.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-        
+
         # gt = cv2.imread(inPath+"/HR/"+ScenePrefix+GtPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:3]
         basecolor = cv2.imread(inPath+"/"+ScenePrefix+BCPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:3]
         metalic = cv2.imread(inPath+"/"+ScenePrefix+MetalicPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:1]
@@ -49,13 +31,36 @@ def MergeRange(start, end, inPath, outPath):
         depth = cv2.imread(inPath+"/"+ScenePrefix+DepthPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:1]
         normal = cv2.imread(inPath+"/"+ScenePrefix+NormalPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
         motionvector = cv2.imread(inPath+"/"+ScenePrefix+MVPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-
-
+        
+        img = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.1.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img3 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.3.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img5 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.5.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        imgOcc = cv2.imread(inPath+"/occ/"+ScenePrefix+WarpPrefix+".{}.1.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img_no_hole = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.1.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img_no_hole3 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.3.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img_no_hole5 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.5.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        
         res = np.concatenate([img,img3,img5, imgOcc, img_no_hole, img_no_hole3, img_no_hole5, basecolor, metalic, roughness, depth, normal, motionvector], axis=2)
         res = res.astype(np.float16)
-        print('outputing',outPath+'compressed.{}.{}.npz'.format(newIdx,('Warp' if WarpFlag else 'NoWarp')))
-        np.savez_compressed(outPath+'compressed.{}.{}.npz'.format(newIdx,('Warp' if WarpFlag else 'NoWarp')), i = res)
-        # np.save(outPath+'compressed.{}'.format(newIdx), res)
+        print('outputing',outPath+'compressed.{}.{}.npz'.format(newIdx,'Warp'))
+        np.savez_compressed(outPath+'compressed.{}.{}.npz'.format(newIdx,'Warp'), i = res)
+
+        img = cv2.imread(inPath+"/"+ScenePrefix+GtPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:3]
+        img3 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.2.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img5 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.4.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        imgOcc = img
+        img_no_hole = img
+        img_no_hole3 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.2.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img_no_hole5 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.4.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        
+        res = np.concatenate([img,img3,img5, imgOcc, img_no_hole, img_no_hole3, img_no_hole5, basecolor, metalic, roughness, depth, normal, motionvector], axis=2)
+        res = res.astype(np.float16)
+        print('outputing',outPath+'compressed.{}.{}.npz'.format(newIdx,'NoWarp'))
+        np.savez_compressed(outPath+'compressed.{}.{}.npz'.format(newIdx,'NoWarp'), i = res)
+
+
+
+        
 def GetCompressStartEnd(path):
     start = 99999
     end = 0
