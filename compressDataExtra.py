@@ -9,7 +9,7 @@ from multiprocessing import Process
 
 threadNum = 4
 
-dirList = ["G:/Unreal Projects/MyProject/Saved/VideoCaptures_Test/"] ## Must end with /
+dirList = ["G:/Unreal Projects/Lewis/Saved/VideoCaptures_Test2/"]## Must end with /
 
 ScenePrefix = "DemoMap2"
 WarpPrefix = "Warp"
@@ -43,7 +43,8 @@ def MergeRange(start, end, inPath, outPath):
         res = np.concatenate([img,img3,img5, imgOcc, img_no_hole, img_no_hole3, img_no_hole5, basecolor, metalic, roughness, depth, normal, motionvector], axis=2)
         res = res.astype(np.float16)
         print('outputing',outPath+'compressed.{}.{}.npz'.format(newIdx,'Warp'))
-        np.savez_compressed(outPath+'compressed.{}.{}.npz'.format(newIdx,'Warp'), i = res)
+        # np.savez_compressed(outPath+'compressed.{}.{}.npz'.format(newIdx,'Warp'), i = res)
+        np.save(outPath+'compressed.{}.{}'.format(newIdx,'Warp'), res)
 
         img = cv2.imread(inPath+"/"+ScenePrefix+GtPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:3]
         img3 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.2.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
@@ -56,7 +57,8 @@ def MergeRange(start, end, inPath, outPath):
         res = np.concatenate([img,img3,img5, imgOcc, img_no_hole, img_no_hole3, img_no_hole5, basecolor, metalic, roughness, depth, normal, motionvector], axis=2)
         res = res.astype(np.float16)
         print('outputing',outPath+'compressed.{}.{}.npz'.format(newIdx,'NoWarp'))
-        np.savez_compressed(outPath+'compressed.{}.{}.npz'.format(newIdx,'NoWarp'), i = res)
+        # np.savez_compressed(outPath+'compressed.{}.{}.npz'.format(newIdx,'NoWarp'), i = res)
+        np.save(outPath+'compressed.{}.{}'.format(newIdx,'NoWarp'), res)
 
 
 

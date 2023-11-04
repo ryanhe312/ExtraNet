@@ -14,7 +14,7 @@ threadNum = 4
 
 # dirList = ["G:/Unreal Projects/SunSet/Saved/VideoCaptures/"] ## Must end with /
 # dirList = ["G:/Unreal Projects/Blueprints/Blueprints/Saved/VideoCaptures/"] ## Must end with /
-dirList = ["G:/Unreal Projects/Lewis/Saved/VideoCaptures_Test/HR/"]
+dirList = ["G:/Unreal Projects/Lewis/Saved/VideoCaptures_Test2/HR/"]
 
 # ScenePrefix = "ThirdPersonExampleMap"
 # ScenePrefix = "BlueprintOffice"
@@ -39,8 +39,8 @@ def MergeRange(start, end, inPath, outPath):
 
         img = img.squeeze().permute(1,2,0).numpy().astype(np.float16)
         print('outputing',outPath+'compressedHR.{}.npz'.format(newIdx))
-        np.savez_compressed(outPath+'compressedHR.{}.npz'.format(newIdx), i = img)
-        # np.save(outPath+'compressed.{}'.format(newIdx), res)
+        # np.savez_compressed(outPath+'compressedHR.{}.npz'.format(newIdx), i = img)
+        np.save(outPath+'compressedHR.{}'.format(newIdx), img)
 def GetCompressStartEnd(path):
     start = 99999
     end = 0
