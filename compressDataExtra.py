@@ -1,30 +1,32 @@
 import numpy as np
-import cv2
 import os
 import sys
 import glob
 from multiprocessing import Process
+os.environ["OPENCV_IO_ENABLE_OPENEXR"]="1"
 # basePath0 = "D:/training_set_v2/WithoutDemodulate/MedievalOrigin/"
 # basePath1 = "I:/"
-
+import cv2
 threadNum = 4
 
-dirList = ["G:/Unreal Projects/Lewis/Saved/VideoCaptures_Test2/"]## Must end with /
+dirList = ["G:/SlayAnimationSample/Saved/MovieRenders/LR"]## Must end with /
 
-ScenePrefix = "DemoMap2"
+ScenePrefix = "TF0010_02."
 WarpPrefix = "Warp"
 GtPrefix = "FinalImage"
-NormalPrefix = "WorldNormal"
-DepthPrefix = "SceneDepth"
-MetalicPrefix = "Metallic"
-RoughPrefix = "Roughness"
-MVPrefix ="MotionVector"
-BCPrefix = "BaseColorAA"
+NormalPrefix = "FinalImageWorldNormal"
+DepthPrefix = "FinalImageSceneDepth"
+MetalicPrefix = "FinalImageMetallic"
+RoughPrefix = "FinalImageRoughness"
+MVPrefix ="FinalImageMotionVector"
+BCPrefix = "FinalImageBaseColor"
 def MergeRange(start, end, inPath, outPath):
     for idx in range(start, end):
         newIdx = str(idx).zfill(4)
 
         # gt = cv2.imread(inPath+"/HR/"+ScenePrefix+GtPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:3]
+        print(inPath+"/"+ScenePrefix+BCPrefix+".{}.exr".format(newIdx))
+
         basecolor = cv2.imread(inPath+"/"+ScenePrefix+BCPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:3]
         metalic = cv2.imread(inPath+"/"+ScenePrefix+MetalicPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:1]
         roughness = cv2.imread(inPath+"/"+ScenePrefix+RoughPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:1]
@@ -32,13 +34,13 @@ def MergeRange(start, end, inPath, outPath):
         normal = cv2.imread(inPath+"/"+ScenePrefix+NormalPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
         motionvector = cv2.imread(inPath+"/"+ScenePrefix+MVPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
         
-        img = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.1.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-        img3 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.3.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-        img5 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.5.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-        imgOcc = cv2.imread(inPath+"/occ/"+ScenePrefix+WarpPrefix+".{}.1.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-        img_no_hole = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.1.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-        img_no_hole3 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.3.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-        img_no_hole5 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.5.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.0001.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img3 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.0003.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img5 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.0005.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        imgOcc = cv2.imread(inPath+"/occ/"+ScenePrefix+WarpPrefix+".{}.0001.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img_no_hole = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.0001.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img_no_hole3 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.0003.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img_no_hole5 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.0005.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
         
         res = np.concatenate([img,img3,img5, imgOcc, img_no_hole, img_no_hole3, img_no_hole5, basecolor, metalic, roughness, depth, normal, motionvector], axis=2)
         res = res.astype(np.float16)
@@ -47,12 +49,12 @@ def MergeRange(start, end, inPath, outPath):
         np.save(outPath+'compressed.{}.{}'.format(newIdx,'Warp'), res)
 
         img = cv2.imread(inPath+"/"+ScenePrefix+GtPrefix+".{}.exr".format(newIdx), cv2.IMREAD_UNCHANGED)[:,:,0:3]
-        img3 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.2.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-        img5 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.4.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img3 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.0002.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img5 = cv2.imread(inPath+"/warp_res/"+ScenePrefix+WarpPrefix+".{}.0004.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
         imgOcc = img
         img_no_hole = img
-        img_no_hole3 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.2.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
-        img_no_hole5 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.4.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img_no_hole3 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.0002.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
+        img_no_hole5 = cv2.imread(inPath+"/warp_no_hole/"+ScenePrefix+WarpPrefix+".{}.0004.exr".format(newIdx), cv2.IMREAD_UNCHANGED)
         
         res = np.concatenate([img,img3,img5, imgOcc, img_no_hole, img_no_hole3, img_no_hole5, basecolor, metalic, roughness, depth, normal, motionvector], axis=2)
         res = res.astype(np.float16)
@@ -77,16 +79,20 @@ def GetStartEnd(path):
     end = 0
 
     for filePath in glob.glob(path + "/GT/*"):
-        idx = int(filePath.split('.')[1])
+        idx = int(filePath.split('.')[2])
         start = min(start, idx)
         end = max(end, idx)
     return start, end
 def MergeFile(inPath, outPath):
     # get index range
     start, end = GetStartEnd(inPath)
+    print(start, end)
 
     if not os.path.exists(outPath):
         os.mkdir(outPath)
+    # combine
+    # MergeRange(start, end+1,inPath, outPath)
+
     # combine
     processList = list()
     part = (end - start + 1) // threadNum + 1
@@ -167,7 +173,7 @@ def CompressRange(di):
 
 if __name__ == "__main__":
     for di in dirList:
-        MergeFile(di, di)
+        MergeFile(di, di+'/Compressed/')
     # for di in dirList:
     #     CompressRange(di)
 

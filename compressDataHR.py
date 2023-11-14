@@ -1,6 +1,8 @@
 import numpy as np
-import cv2
+
 import os
+os.environ["OPENCV_IO_ENABLE_OPENEXR"]="1"
+import cv2
 import sys
 import glob
 from PIL import Image
@@ -14,12 +16,12 @@ threadNum = 4
 
 # dirList = ["G:/Unreal Projects/SunSet/Saved/VideoCaptures/"] ## Must end with /
 # dirList = ["G:/Unreal Projects/Blueprints/Blueprints/Saved/VideoCaptures/"] ## Must end with /
-dirList = ["G:/Unreal Projects/Lewis/Saved/VideoCaptures_Test2/HR/"]
+dirList = ["G:/SlayAnimationSample/Saved/MovieRenders/HR"]
 
 # ScenePrefix = "ThirdPersonExampleMap"
 # ScenePrefix = "BlueprintOffice"
-ScenePrefix = "DemoMap2"
-GtPrefix = "FinalImage"
+ScenePrefix = "TF0010_02."
+GtPrefix = ""
 # DepthPrefix = "SceneDepth"
 # MVPrefix ="MotionVector"
 
@@ -103,7 +105,7 @@ def CompressRange(di):
 
 if __name__ == "__main__":
     for di in dirList:
-        MergeFile(di, di)
+        MergeFile(di, di+'Compressed/')
     # for di in dirList:
     #     CompressRange(di)
 

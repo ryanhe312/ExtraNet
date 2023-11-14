@@ -5,7 +5,7 @@ import sys
 import glob
 from multiprocessing import Process
 # from win32com.shell import shellcon, shell
-
+os.environ["OPENCV_IO_ENABLE_OPENEXR"]="1"
 ENABLE_OCCWARP = True
 ENABLE_DEMODULATE = False
 
@@ -77,15 +77,15 @@ class GlobalInfo():
         # setup prefix
         self.PrefixSN = name
         self.PrefixFI = name + "FinalImage."
-        self.PrefixWN = name + "WorldNormal."
-        self.PrefixWP = name + "WorldPosition."
-        self.PrefixSD = name + "SceneDepth."
-        self.PrefixMV = name + "MotionVector."
-        self.PrefixSC = name + "MyStencil."
-        self.PrefixNV = name + "NoV."
-        self.PrefixSpe = name + "Specular."
-        self.PrefixMetallic = name + "Metallic."
-        self.PrefixBC = name + "BaseColorAA."
+        self.PrefixWN = name + "FinalImageWorldNormal."
+        self.PrefixWP = name + "FinalImageWorldPosition."
+        self.PrefixSD = name + "FinalImageSceneDepth."
+        self.PrefixMV = name + "FinalImageMotionVector."
+        self.PrefixSC = name + "FinalImageMyStencil."
+        self.PrefixNV = name + "FinalImageNoV."
+        self.PrefixSpe = name + "FinalImageSpecular."
+        self.PrefixMetallic = name + "FinalImageMetallic."
+        self.PrefixBC = name + "FinalImageBaseColor."
         # self.PrefixBC = name + "BaseColor."
         self.PrefixPreTM = name + "FinalImage."
         self.PrefixWarp = name + "Warp."
@@ -121,7 +121,7 @@ class GlobalInfo():
 def init(path):
 
     PrefixSN = ""
-    PrefixPreTM = "FinalImage."
+    PrefixPreTM = "FinalImage"
     for filePath in glob.glob(path + "\\*"):
         if PrefixPreTM in filePath:
             PrefixSN = filePath.split('\\')[-1].split(PrefixPreTM)[0]
@@ -134,7 +134,7 @@ def init(path):
 
     for filePath in glob.glob(path + "/*"):
         if PrefixPreTM in filePath:
-            idx = int(filePath.split('.')[1])
+            idx = int(filePath.split('.')[2])
             start = min(start, idx)
             end = max(end, idx)
 
@@ -562,44 +562,44 @@ def make_hole(id, globalInfo, start, end):
             if Normal_Only:
                 moving_actor_only_warp = res_warp_img.copy()
                 moving_actor_only_warp[moving_actor_hole] = -1
-                cv.imwrite(os.path.join(globalInfo.mResNPath, "NormalOnlyWarp" + idx_res + '.' + str(WARP_NUM - t) + ".exr"), moving_actor_only_warp)
+                cv.imwrite(os.path.join(globalInfo.mResNPath, "NormalOnlyWarp" + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), moving_actor_only_warp)
 
             if WorldPos_Only:
                 world_pos_only_warp = res_warp_img.copy()
                 world_pos_only_warp[static_disocc] = -1
-                cv.imwrite(os.path.join(globalInfo.mResWPPath, "WorldPosOnlyWarp." + idx_res + '.' + str(WARP_NUM - t) + ".exr"), world_pos_only_warp)
-                cv.imwrite(os.path.join(globalInfo.mResWPPath, "worldPosDiff." + idx_res + '.' + str(WARP_NUM - t) + ".exr"), world_position_distance)
-                cv.imwrite(os.path.join(globalInfo.mResWPPath, "worldPosBias." + idx_res + '.' + str(WARP_NUM - t) + ".exr"), bias)
+                cv.imwrite(os.path.join(globalInfo.mResWPPath, "WorldPosOnlyWarp." + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), world_pos_only_warp)
+                cv.imwrite(os.path.join(globalInfo.mResWPPath, "worldPosDiff." + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), world_position_distance)
+                cv.imwrite(os.path.join(globalInfo.mResWPPath, "worldPosBias." + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), bias)
 
             if Stencil_Only:
                 stencil_only_warp = res_warp_img.copy()
                 stencil_only_warp[mesh_hole] = -1
-                cv.imwrite(os.path.join(globalInfo.mResSPath, "StencilOnlywarpDiffuse." + idx_res + '.' + str(WARP_NUM - t) + ".exr"), stencil_only_warp)
+                cv.imwrite(os.path.join(globalInfo.mResSPath, "StencilOnlywarpDiffuse." + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), stencil_only_warp)
 
             if Warp_Only:
-                cv.imwrite(os.path.join(globalInfo.mNoHolePath, globalInfo.PrefixWarp + idx_res + '.' + str(WARP_NUM - t) + ".exr"), res_warp_img)
+                cv.imwrite(os.path.join(globalInfo.mNoHolePath, globalInfo.PrefixWarp + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), res_warp_img)
 
             res_warp_img[hole] = -1
-            cv.imwrite(os.path.join(globalInfo.mResPath, globalInfo.PrefixWarp + idx_res + '.' + str(WARP_NUM - t) + ".exr"), res_warp_img)
+            cv.imwrite(os.path.join(globalInfo.mResPath, globalInfo.PrefixWarp + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), res_warp_img)
 
             if t == WARP_NUM - 1:
                 if ENABLE_OCCWARP:
-                    prev_depth = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixSD + str(idx + t) + ".exr"), cv.IMREAD_UNCHANGED)
+                    prev_depth = cv.imread(os.path.join(globalInfo.mPath, globalInfo.PrefixSD + str(idx + t).zfill(4) + ".exr"), cv.IMREAD_UNCHANGED)
                     occ_motion_vector = GetOCCMV(motion_vector_temp, depth_target)
                     if DEBUG_OCC:
-                        cv.imwrite(os.path.join(globalInfo.mOCCWarpPath, "OCCMotionVector" + idx_res + '.' + str(WARP_NUM - t) + ".exr"), occ_motion_vector)
+                        cv.imwrite(os.path.join(globalInfo.mOCCWarpPath, "OCCMotionVector" + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), occ_motion_vector)
 
                     occ_motion_vector = np.pad(occ_motion_vector, ((1, 1), (1, 1), (0, 0)), constant_values=0.0)
 
                     occ_img_warp = getOCCWarpImg(img_cur, occ_motion_vector, height, width)
                     res_warp_img[hole] = occ_img_warp[hole]
-                    cv.imwrite(os.path.join(globalInfo.mOCCPath, globalInfo.PrefixWarp + idx_res + '.' + str(WARP_NUM - t) + ".exr"), res_warp_img)
+                    cv.imwrite(os.path.join(globalInfo.mOCCPath, globalInfo.PrefixWarp + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), res_warp_img)
                     if DEBUG_OCC:
-                       cv.imwrite(os.path.join(globalInfo.mOCCWarpPath, "OCCWarpImg" + idx_res + '.' + str(WARP_NUM - t) + ".exr"), occ_img_warp)
+                       cv.imwrite(os.path.join(globalInfo.mOCCWarpPath, "OCCWarpImg" + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), occ_img_warp)
 
                 if DEBUG_MV:
                     motion_vector_temp = cv.cvtColor(motion_vector_temp, cv.COLOR_RGB2BGR)
-                    cv.imwrite(os.path.join(globalInfo.mWarpMotionPath, globalInfo.PrefixMV + idx_res + '.' + str(WARP_NUM - t) + ".exr"), motion_vector_temp)
+                    cv.imwrite(os.path.join(globalInfo.mWarpMotionPath, globalInfo.PrefixMV + idx_res + '.' + str(WARP_NUM - t).zfill(4) + ".exr"), motion_vector_temp)
 
             print("Process-", id, ": output:", str(idx + t), " to ", idx_res)
 
